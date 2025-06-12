@@ -125,6 +125,12 @@ The project implements security best practices including:
 
 - Multi-region replication of state and critical data
 - Regular backups with AWS Backup
-- Documented recovery procedures# Local-to-terraform-setup-configuration
-# Local-to-terraform-setup-configuration
+- Documented recovery procedures
+
+## Documentation
+
+- [Local Development Guide](docs/local-development.md)
+- [Troubleshooting Guide](docs/troubleshooting.md)
+- [Upgrade Guide](docs/upgrade-guide.md)
+- [Disaster Recovery Plan](recovery-plan.md)
 # Local-to-terraform-setup-configuration

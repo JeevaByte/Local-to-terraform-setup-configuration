@@ -1,0 +1,9 @@
+{
+  "name": "secrets-rotation-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function for AWS Secrets Manager rotation",
+  "main": "rotation-function.js",
+  "dependencies": {
+    "aws-sdk": "^2.1048.0"
+  }
+}
