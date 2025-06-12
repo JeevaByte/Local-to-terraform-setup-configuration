@@ -4,12 +4,60 @@ This project demonstrates how to use Terraform to deploy an EKS cluster with sup
 
 ## Architecture
 
+```
+                                   +-------------------+
+                                   |                   |
+                                   |  Transit Gateway  |
+                                   |                   |
+                                   +--------+----------+
+                                            |
+                                            |
+                                   +--------v----------+
+                                   |                   |
+                                   |   Intranet VPC    |
+                                   |                   |
+                                   +-------------------+
+                                            |
+                                            |
++------------------+             +----------v---------+
+|                  |             |                    |
+|  Public Subnet   |             |  Private Subnet    |
+|                  |             |                    |
+|  +-----------+   |             |  +------------+    |
+|  |           |   |             |  |            |    |
+|  |    NAT    |   |             |  |    EKS     |    |
+|  | Instance  +--------------------->  Cluster  |    |
+|  |           |   |             |  |            |    |
+|  +-----+-----+   |             |  +------+-----+    |
+|        |         |             |         |          |
+|  +-----v-----+   |             |  +------v-----+    |
+|  |           |   |             |  |            |    |
+|  |   Public  |   |             |  |  Private   |    |
+|  |    NLB    |   |             |  |  Fargate   |    |
+|  |           |   |             |  |   Pods     |    |
+|  +-----------+   |             |  +------------+    |
+|                  |             |                    |
++------------------+             +--------------------+
+        |                                 |
+        |                                 |
++-------v---------------------------------v----------+
+|                                                    |
+|                     Internet                       |
+|                                                    |
++----------------------------------------------------+
+```
+
 The project deploys:
 - VPC with public and private subnets
 - EKS cluster with Fargate profiles
 - Network Load Balancer
 - NAT instance for private subnet connectivity
 - Transit Gateway for connecting to an intranet VPC
+- Monitoring with Prometheus and Grafana
+- Logging with EFK stack (Elasticsearch, Fluentd, Kibana)
+- Disaster recovery with AWS Backup and multi-region replication
+- CI/CD pipeline with AWS CodePipeline and GitHub integration
+- Security compliance testing and monitoring
 
 ## Prerequisites
 
@@ -20,6 +68,18 @@ The project deploys:
 - helm
 
 ## Setup Instructions
+
+### State Management Setup
+
+Before deploying, set up the state management resources:
+
+```bash
+# For Linux/macOS
+./scripts/create-state-bucket.sh
+
+# For Windows
+./scripts/create-state-bucket.ps1
+```
 
 ### Production Deployment
 
@@ -56,4 +116,14 @@ kubectl port-forward svc/grafana 3000:80 -n monitoring
 The project implements security best practices including:
 - Private subnets for EKS nodes
 - Security groups with least privilege
-- IAM roles with appropriate permissions# Local-to-terraform-setup-configuration
+- IAM roles with appropriate permissions
+- Network policies for pod-to-pod communication
+- AWS Config for compliance monitoring
+- Security scanning in CI/CD pipeline
+
+## Disaster Recovery
+
+- Multi-region replication of state and critical data
+- Regular backups with AWS Backup
+- Documented recovery procedures# Local-to-terraform-setup-configuration
+# Local-to-terraform-setup-configuration

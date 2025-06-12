@@ -1,0 +1,37 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - pip install terraform-compliance checkov
+      - curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+  
+  pre_build:
+    commands:
+      - echo "Running security scans..."
+      - checkov -d .
+      - tflint
+  
+  build:
+    commands:
+      - echo "Initializing Terraform..."
+      - terraform init
+      - echo "Validating Terraform..."
+      - terraform validate
+      - echo "Planning Terraform..."
+      - terraform plan -out=tfplan
+      - terraform show -json tfplan > tfplan.json
+      - terraform-compliance -p tfplan.json -f ./compliance-tests/
+  
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+
+artifacts:
+  files:
+    - tfplan
+    - tfplan.json
+    - terraform.tfstate
+    - '**/*'

@@ -10,6 +10,9 @@ module "eks" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids
 
+  # Enable CloudWatch logging
+  cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  
   # Fargate profiles
   fargate_profiles = var.fargate_profiles
 
