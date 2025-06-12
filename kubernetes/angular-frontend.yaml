@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: angular-frontend
   namespace: frontend
-  labels:
-    app: angular
 spec:
   replicas: 2
   selector:
@@ -17,7 +15,7 @@ spec:
     spec:
       containers:
       - name: angular
-        image: ${ECR_REPOSITORY_URL}/angular-frontend:latest
+        image: ${ECR_REPO}/angular-frontend:latest
         ports:
         - containerPort: 80
         resources:
@@ -27,6 +25,9 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
+        envFrom:
+        - configMapRef:
+            name: frontend-config
 ---
 apiVersion: v1
 kind: Service
@@ -40,22 +41,3 @@ spec:
   - port: 80
     targetPort: 80
   type: ClusterIP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: angular-frontend-ingress
-  namespace: frontend
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: angular-frontend
-            port:
-              number: 80

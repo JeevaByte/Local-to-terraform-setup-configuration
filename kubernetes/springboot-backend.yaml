@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: springboot-backend
   namespace: backend
-  labels:
-    app: springboot
 spec:
   replicas: 2
   selector:
@@ -17,48 +15,31 @@ spec:
     spec:
       containers:
       - name: springboot
-        image: ${ECR_REPOSITORY_URL}/springboot-backend:latest
+        image: ${ECR_REPO}/springboot-backend:latest
         ports:
         - containerPort: 8080
-        env:
-        - name: SPRING_PROFILES_ACTIVE
-          value: "production"
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "200m"
-          limits:
             memory: "512Mi"
             cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        envFrom:
+        - configMapRef:
+            name: backend-config
+        - secretRef:
+            name: backend-secrets
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: springboot-backend
+  name: backend-service
   namespace: backend
 spec:
   selector:
     app: springboot
   ports:
-  - port: 80
+  - port: 8080
     targetPort: 8080
   type: ClusterIP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: springboot-backend-ingress
-  namespace: backend
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: springboot-backend
-            port:
-              number: 80
